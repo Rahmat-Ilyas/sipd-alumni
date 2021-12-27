@@ -12,4 +12,14 @@ class Siswa extends Model
 
     protected $table = 'siswa';
     protected $guarded = [];
+
+    public function sekolah() 
+    {
+        return $this->belongsTo(Sekolah::class);
+    }
+
+    public function universitas() 
+    {
+        return $this->belongsTo(Universitas::class);
+    }
 }

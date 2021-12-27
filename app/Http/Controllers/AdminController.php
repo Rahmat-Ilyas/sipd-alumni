@@ -4,13 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Admin;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 use App\Models\Universitas;
 use App\Models\UniversitasFav;
 use App\Models\Sekolah;
 use App\Models\Siswa;
 use App\Models\Kota;
-
 // use DataTables;
 use Yajra\DataTables\Facades\DataTables as DataTables;
 
@@ -151,17 +151,20 @@ class AdminController extends Controller
     public  function datatable(Request $request)
     {
         if ($request->req == 'getSiswa') {
-			$result = Siswa::all();
-			$data = [];
-			$no = 1;
-			foreach ($result as $dta) {
-				$dta->no = $no;
-				$data[] = $dta;
-				$no = $no + 1;
-			}
+            $result = DB::table('siswa')
+            ->join('universitas', 'siswa.universitas_id', '=', 'universitas.id')
+            ->join('sekolah', 'siswa.sekolah_id', '=', 'sekolah.id')
+            ->select('siswa.*', 'universitas.nama_pt', 'sekolah.nama_sekolah')
+            ->orderBy('tahun_lulus', 'desc');
+            // $result = Siswa::orderBy('tahun_lulus', 'desc')->get();
 
-			return DataTables::of($data)
-			->addColumn('action', function($dta) {
+			return DataTables::of($result)->addColumn('no', function($dta) {
+                return null;
+            })->addColumn('universitas', function($dta) {
+                return $dta->nama_pt;
+            })->addColumn('sekolah', function($dta) {
+                return $dta->nama_sekolah;
+            })->addColumn('action', function($dta) {
 				return '<div class="text-center">
 				<button type="button" class="btn btn-primary btn-sm waves-effect waves-light btn-detail" data-toggle1="tooltip" title="Lihat Detail Siswa" data-toggle="modal" data-target=".modal-detail" data-id="'.$dta->id.'"><i class="fa fa-list"></i> Detail</button>
 				</div>';

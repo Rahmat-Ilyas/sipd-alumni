@@ -131,7 +131,9 @@
                 ajax: url + '/datatable?req=getSiswa',
                 columns: [{
                         data: 'no',
-                        name: 'no'
+                        render: function(data, type, row, meta) {
+                            return meta.row + 1;
+                        }
                     },
                     {
                         data: 'nisn',
@@ -146,16 +148,16 @@
                         name: 'jenis_kelamin'
                     },
                     {
-                        data: 'sekolah_id',
-                        name: 'sekolah_id'
+                        data: 'sekolah',
+                        name: 'sekolah'
                     },
                     {
                         data: 'tahun_lulus',
                         name: 'tahun_lulus'
                     },
                     {
-                        data: 'universitas_id',
-                        name: 'universitas_id'
+                        data: 'universitas',
+                        name: 'universitas'
                     },
                     {
                         data: 'tahun_masuk_pt',

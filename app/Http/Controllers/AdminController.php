@@ -145,6 +145,11 @@ class AdminController extends Controller
             $res['provinsi_'] = $res->provinsi->nama_provinsi;
             $res['kota'] = $res->get_kota($res->kota_id);
             return response()->json($res, 200);
+        } else if ($request->req == 'getSiswaDetail') {
+            $res = Siswa::where('id', $request->id)->first();
+            $res['sekolah_'] = $res->sekolah->nama_sekolah;
+            $res['universitas_'] = $res->universitas->nama_pt;
+            return response()->json($res, 200);
         }
     }
 
@@ -156,7 +161,20 @@ class AdminController extends Controller
             ->join('sekolah', 'siswa.sekolah_id', '=', 'sekolah.id')
             ->select('siswa.*', 'universitas.nama_pt', 'sekolah.nama_sekolah')
             ->orderBy('tahun_lulus', 'desc');
-            // $result = Siswa::orderBy('tahun_lulus', 'desc')->get();
+
+            if ($request->get == 'asal_sekolah') {
+                $result = $result->where('sekolah_id', $request->value)->get();
+            } else if ($request->get == 'universitas') {
+                $result = $result->where('universitas_id', $request->value)->get();
+            } else if ($request->get == 'tahun_lulus') {
+                $result = $result->where('tahun_lulus', $request->value)->get();
+            } else if ($request->get == 'tahun_masuk') {
+                $result = $result->where('tahun_masuk_pt', $request->value)->get();
+            } else if ($request->get == 'sekolah_alt') {
+                $result = $result->where('sekolah_id', $request->value2)->where('tahun_lulus', $request->value)->get();
+            } else if ($request->get == 'universitas_alt') {
+                $result = $result->where('universitas_id', $request->value2)->where('tahun_masuk_pt', $request->value)->get();
+            }
 
 			return DataTables::of($result)->addColumn('no', function($dta) {
                 return null;

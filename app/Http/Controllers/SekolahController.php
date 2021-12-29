@@ -102,6 +102,11 @@ class SekolahController extends Controller
                 $option .= '<option value="' . $dta->id . '">' . $dta->nama_kota . '</option>';
             }
             return response()->json($option, 200);
+        } else if ($request->req == 'getSiswaDetail') {
+            $res = Siswa::where('id', $request->id)->first();
+            $res['sekolah_'] = $res->sekolah->nama_sekolah;
+            $res['universitas_'] = $res->universitas->nama_pt;
+            return response()->json($res, 200);
         }
     }
 

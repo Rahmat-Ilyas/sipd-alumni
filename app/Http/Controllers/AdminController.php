@@ -12,6 +12,7 @@ use App\Models\UniversitasFav;
 use App\Models\Sekolah;
 use App\Models\Siswa;
 use App\Models\Kota;
+use App\Models\Provinsi;
 
 class AdminController extends Controller
 {
@@ -57,6 +58,16 @@ class AdminController extends Controller
             $data['password'] = bcrypt($request->npsn);
             Sekolah::create($data);
             return back()->with('success', 'Data sekolah berhasil ditambahkan');
+        } else if ($target == 'dataprovinsi') {
+            $data = $request->all();
+            $data['nama_provinsi'] = strtoupper($request->nama_provinsi);
+            Provinsi::create($data);
+            return back()->with('success', 'Data provinsi berhasil ditambahkan');
+        } else if ($target == 'datakota') {
+            $data = $request->all();
+            $data['nama_kota'] = strtoupper($request->nama_kota);
+            Kota::create($data);
+            return back()->with('success', 'Data kabupaten/kota berhasil ditambahkan');
         }
     }
 
@@ -107,6 +118,19 @@ class AdminController extends Controller
             $akun->save();
 
             return back()->with('success', 'Data akun berhasil diupdate');
+        } else if ($target == 'dataprovinsi') {
+            $update = Provinsi::where('id', $request->id)->first();
+            $update->nama_provinsi = strtoupper($request->nama_provinsi);
+            $update->save();
+
+            return back()->with('success', 'Data provinsi berhasil diupdate');
+        } else if ($target == 'datakota') {
+            $update = Kota::where('id', $request->id)->first();
+            $update->provinsi_id = $request->provinsi_id;
+            $update->nama_kota = strtoupper($request->nama_kota);
+            $update->save();
+
+            return back()->with('success', 'Data kabupaten/kota berhasil diupdate');
         }
     }
 
@@ -120,6 +144,8 @@ class AdminController extends Controller
         } else if ($target == 'universitas') {
             $data = Universitas::where('id', $id)->first();
             $data->delete();
+            $delfav = UniversitasFav::where('universitas_id', $id)->first();
+            $delfav->delete();
 
             return back()->with('success', 'Data universitas berhasil dihapus');
         } else if ($target == 'universitasfav') {
@@ -127,6 +153,16 @@ class AdminController extends Controller
             $data->delete();
 
             return back()->with('success', 'Data universitas favorit berhasil dihapus');
+        } else if ($target == 'provinsi') {
+            $data = Provinsi::where('id', $id)->first();
+            $data->delete();
+
+            return back()->with('success', 'Data provinsi berhasil dihapus');
+        } else if ($target == 'kota') {
+            $data = Kota::where('id', $id)->first();
+            $data->delete();
+
+            return back()->with('success', 'Data kabupaten/kota berhasil dihapus');
         }
     }
 

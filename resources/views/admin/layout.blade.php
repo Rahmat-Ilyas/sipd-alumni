@@ -173,8 +173,8 @@
                                 </li>
                             </ul>
                         </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
+                        <li class="nav-item nav-top">
+                            <a href="#" class="nav-link" id="nav-master-data">
                                 <i class="nav-icon fas fa-database"></i>
                                 <p>
                                     Master Data
@@ -183,13 +183,15 @@
                             </a>
                             <ul class="nav nav-treeview">
                                 <li class="nav-item">
-                                    <a href="pages/tables/simple.html" class="nav-link">
+                                    <a href="{{ url('admin/master-data/data-provinsi') }}" class="nav-link"
+                                        id="nav-provinsi">
                                         <i class="far fa-circle nav-icon"></i>
                                         <p>Data Provinsi</p>
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="pages/tables/data.html" class="nav-link">
+                                    <a href="{{ url('admin/master-data/data-kota') }}" class="nav-link"
+                                        id="nav-kota">
                                         <i class="far fa-circle nav-icon"></i>
                                         <p>Data Kabupaten/Kota</p>
                                     </a>

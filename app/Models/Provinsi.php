@@ -10,6 +10,7 @@ class Provinsi extends Model
 {
     use HasFactory, Notifiable;
 
+    public $timestamps = false;
     protected $table = 'provinsi';
     protected $guarded = [];
 
@@ -17,5 +18,11 @@ class Provinsi extends Model
     {
         $kota = Kota::where('provinsi_id', $id)->get();
         return $kota;
+    }
+
+    public function jumlah_kota($id)
+    {
+        $kota = Kota::where('provinsi_id', $id)->get();
+        return count($kota);
     }
 }

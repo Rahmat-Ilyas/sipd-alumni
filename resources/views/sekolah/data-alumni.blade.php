@@ -20,7 +20,7 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1 class="m-0">Data Siswa di Semua Universitas</h1>
+                        <h1 class="m-0">Data Alumni</h1>
                     </div><!-- /.col -->
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
@@ -246,8 +246,7 @@
 @section('javascript')
     <script>
         $(function() {
-            $('#nav-data-siswa').addClass('active').parents('.nav-top').addClass('menu-open').find(
-                '#nav-siswa-terdaftar').addClass('active');
+            $('#nav-data-alumni').addClass('active');
 
             var url = "{{ url('sekolah/config') }}";
             var headers = {

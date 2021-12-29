@@ -10,6 +10,12 @@ class Kota extends Model
 {
     use HasFactory, Notifiable;
 
+    public $timestamps = false;
     protected $table = 'kota';
     protected $guarded = [];
+
+    public function provinsi()
+    {
+        return $this->belongsTo(Provinsi::class);
+    }
 }

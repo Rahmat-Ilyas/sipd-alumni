@@ -20,7 +20,7 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1 class="m-0">Semua Universitas</h1>
+                        <h1 class="m-0">Data Siswa di Semua Universitas</h1>
                     </div><!-- /.col -->
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
@@ -409,7 +409,8 @@
                     responsive: true,
                     processing: true,
                     serverSide: true,
-                    ajax: url + '/datatable?req=getSiswa&get=' + get + '&value=' + val + '&value2=' + val2,
+                    ajax: url + '/datatable?req=getSiswa&get=' + get + '&value=' + val + '&value2=' +
+                        val2,
                     columns: [{
                             data: 'no',
                             render: function(data, type, row, meta) {

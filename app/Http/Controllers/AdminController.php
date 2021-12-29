@@ -2,17 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Admin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Yajra\DataTables\Facades\DataTables as DataTables;
 
+use App\Models\Admin;
 use App\Models\Universitas;
 use App\Models\UniversitasFav;
 use App\Models\Sekolah;
 use App\Models\Siswa;
 use App\Models\Kota;
-// use DataTables;
-use Yajra\DataTables\Facades\DataTables as DataTables;
 
 class AdminController extends Controller
 {
@@ -20,7 +19,7 @@ class AdminController extends Controller
     {
         $this->middleware('auth:admin');
     }
-    
+
     public function home()
     {
         return view('admin/home');
@@ -68,7 +67,7 @@ class AdminController extends Controller
             if ($cek_npsn) {
                 return redirect()->back()->withInput($request->all())->withErrors(['error' => ['NPSN sudah terdaftar']]);
             }
-            
+
             $update = Universitas::where('id', $request->id)->first();
             $except = ['_token', 'id'];
             foreach ($request->except($except) as $key => $data) {
@@ -82,7 +81,7 @@ class AdminController extends Controller
             if ($cek_npsn) {
                 return redirect()->back()->withInput($request->all())->withErrors(['error' => ['NPSN sudah terdaftar']]);
             }
-            
+
             $update = Sekolah::where('id', $request->id)->first();
             if ($request->password == '') $except = ['_token', 'id', 'password'];
             else {
@@ -137,7 +136,7 @@ class AdminController extends Controller
             $kota = Kota::where('provinsi_id', $request->provinsi_id)->get();
             $option = '<option value="">.::Pilih Kota::.</option>';
             foreach ($kota as $dta) {
-                $option .= '<option value="'.$dta->id.'">'.$dta->nama_kota.'</option>';
+                $option .= '<option value="' . $dta->id . '">' . $dta->nama_kota . '</option>';
             }
             return response()->json($option, 200);
         } else if ($request->req == 'getUnivDetail') {
@@ -157,10 +156,10 @@ class AdminController extends Controller
     {
         if ($request->req == 'getSiswa') {
             $result = DB::table('siswa')
-            ->join('universitas', 'siswa.universitas_id', '=', 'universitas.id')
-            ->join('sekolah', 'siswa.sekolah_id', '=', 'sekolah.id')
-            ->select('siswa.*', 'universitas.nama_pt', 'sekolah.nama_sekolah')
-            ->orderBy('tahun_lulus', 'desc');
+                ->join('universitas', 'siswa.universitas_id', '=', 'universitas.id')
+                ->join('sekolah', 'siswa.sekolah_id', '=', 'sekolah.id')
+                ->select('siswa.*', 'universitas.nama_pt', 'sekolah.nama_sekolah')
+                ->orderBy('tahun_lulus', 'desc');
 
             if ($request->get == 'asal_sekolah') {
                 $result = $result->where('sekolah_id', $request->value)->get();
@@ -176,17 +175,49 @@ class AdminController extends Controller
                 $result = $result->where('universitas_id', $request->value2)->where('tahun_masuk_pt', $request->value)->get();
             }
 
-			return DataTables::of($result)->addColumn('no', function($dta) {
+            return DataTables::of($result)->addColumn('no', function ($dta) {
                 return null;
-            })->addColumn('universitas', function($dta) {
+            })->addColumn('universitas', function ($dta) {
                 return $dta->nama_pt;
-            })->addColumn('sekolah', function($dta) {
+            })->addColumn('sekolah', function ($dta) {
                 return $dta->nama_sekolah;
-            })->addColumn('action', function($dta) {
-				return '<div class="text-center">
-				<button type="button" class="btn btn-primary btn-sm waves-effect waves-light btn-detail" data-toggle1="tooltip" title="Lihat Detail Siswa" data-toggle="modal" data-target=".modal-detail" data-id="'.$dta->id.'"><i class="fa fa-list"></i> Detail</button>
+            })->addColumn('action', function ($dta) {
+                return '<div class="text-center">
+				<button type="button" class="btn btn-primary btn-sm waves-effect waves-light btn-detail" data-toggle1="tooltip" title="Lihat Detail Siswa" data-toggle="modal" data-target=".modal-detail" data-id="' . $dta->id . '"><i class="fa fa-list"></i> Detail</button>
 				</div>';
-			})->rawColumns(['action'])->toJson();
-		}
+            })->rawColumns(['action'])->toJson();
+        } else if ($request->req == 'getSiswaFav') {
+            $result = DB::table('siswa')
+                ->join('universitas', 'siswa.universitas_id', '=', 'universitas.id')
+                ->join('sekolah', 'siswa.sekolah_id', '=', 'sekolah.id')
+                ->select('siswa.*', 'universitas.nama_pt', 'sekolah.nama_sekolah')
+                ->orderBy('tahun_lulus', 'desc');
+
+            if ($request->get == 'asal_sekolah') {
+                $result = $result->where('sekolah_id', $request->value)->get();
+            } else if ($request->get == 'universitas') {
+                $result = $result->where('universitas_id', $request->value)->get();
+            } else if ($request->get == 'tahun_lulus') {
+                $result = $result->where('tahun_lulus', $request->value)->get();
+            } else if ($request->get == 'tahun_masuk') {
+                $result = $result->where('tahun_masuk_pt', $request->value)->get();
+            } else if ($request->get == 'sekolah_alt') {
+                $result = $result->where('sekolah_id', $request->value2)->where('tahun_lulus', $request->value)->get();
+            } else if ($request->get == 'universitas_alt') {
+                $result = $result->where('universitas_id', $request->value2)->where('tahun_masuk_pt', $request->value)->get();
+            }
+
+            return DataTables::of($result)->addColumn('no', function ($dta) {
+                return null;
+            })->addColumn('universitas', function ($dta) {
+                return $dta->nama_pt;
+            })->addColumn('sekolah', function ($dta) {
+                return $dta->nama_sekolah;
+            })->addColumn('action', function ($dta) {
+                return '<div class="text-center">
+				<button type="button" class="btn btn-primary btn-sm waves-effect waves-light btn-detail" data-toggle1="tooltip" title="Lihat Detail Siswa" data-toggle="modal" data-target=".modal-detail" data-id="' . $dta->id . '"><i class="fa fa-list"></i> Detail</button>
+				</div>';
+            })->rawColumns(['action'])->toJson();
+        }
     }
 }

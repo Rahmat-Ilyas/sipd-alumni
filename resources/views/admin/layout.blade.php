@@ -165,7 +165,8 @@
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="pages/tables/data.html" class="nav-link">
+                                    <a href="{{ url('admin/data-siswa/universitas-fav') }}" class="nav-link"
+                                        id="nav-siswa-univ-fav">
                                         <i class="far fa-circle nav-icon"></i>
                                         <p>Universitas Favorit</p>
                                     </a>

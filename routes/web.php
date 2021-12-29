@@ -37,6 +37,7 @@ Route::group(['prefix' => 'sekolah'], function () {
     Route::get('/', 'SekolahController@home')->name('sekolah.home');
 
     Route::post('/config', 'SekolahController@config');
+    Route::get('/config/datatable', 'SekolahController@datatable');
     Route::post('/store/{target}', 'SekolahController@store');
     Route::post('/update/{target}', 'SekolahController@update');
     Route::get('/delete/{target}/{id}', 'SekolahController@delete');

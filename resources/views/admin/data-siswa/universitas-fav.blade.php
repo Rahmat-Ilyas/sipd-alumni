@@ -1,9 +1,9 @@
-@extends('sekolah.layout')
+@extends('admin.layout')
 @section('content')
     @php
     $sekolah = new App\Models\Sekolah();
     $provinsi = new App\Models\Provinsi();
-    $universitas = new App\Models\Universitas();
+    $universitas = new App\Models\UniversitasFav();
 
     $siswa = new App\Models\Siswa();
     $tahun_lulus = [];
@@ -20,13 +20,13 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1 class="m-0">Data Siswa di Semua Universitas</h1>
+                        <h1 class="m-0">Data Siswa di Universitas Favorit</h1>
                     </div><!-- /.col -->
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
                             <li class="breadcrumb-item"><a href="#">Home</a></li>
                             <li class="breadcrumb-item"><a href="#">Data Siswa Terdaftar</a></li>
-                            <li class="breadcrumb-item active">Semua Universitas</li>
+                            <li class="breadcrumb-item active">Universitas Favorit</li>
                         </ol>
                     </div><!-- /.col -->
                 </div><!-- /.row -->
@@ -51,21 +51,51 @@
                                                         <label>Lihat Data Siswa Berdasarkan:</label>
                                                         <select class="form-control" id="select-data">
                                                             <option value="all">Semua Data</option>
-                                                            <option value="universitas">Universitas Dimasuki</option>
+                                                            <option value="asal_sekolah">Asal Sekolah (Alumni)</option>
+                                                            <option value="universitas">Universitas</option>
                                                             <option value="tahun_lulus">Tahun Lulus Sekolah</option>
                                                             <option value="tahun_masuk">Tahun Masuk Universitas</option>
                                                         </select>
                                                     </div>
                                                 </div>
+                                                <div id="sekolah-view" class="col-6 row" hidden="">
+                                                    <div class="col-6">
+                                                        <div class="form-group">
+                                                            <label>Asal Sekolah (Alumni):</label>
+                                                            <select class="select2 form-control" id="sekolah-opt">
+                                                                <option value="">.::Pilih Sekolah::.</option>
+                                                                @foreach ($sekolah->all() as $skl)
+                                                                    <option value="{{ $skl->id }}">
+                                                                        {{ $skl->nama_sekolah }}
+                                                                    </option>
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <div class="form-group">
+                                                            <label>Tahun Lulus:</label>
+                                                            <select class="select2 form-control" id="tahunlulus-alt-opt"
+                                                                disabled="">
+                                                                <option value="">.::Pilih Tahun Lulus::.</option>
+                                                                @foreach (array_unique($tahun_lulus) as $tl)
+                                                                    <option value="{{ $tl }}">
+                                                                        {{ $tl }}
+                                                                    </option>
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                                 <div id="universitas-view" class="col-6 row" hidden="">
                                                     <div class="col-6">
                                                         <div class="form-group">
-                                                            <label>Universitas Dimasuki:</label>
+                                                            <label>Universitas:</label>
                                                             <select class="select2 form-control" id="universitas-opt">
                                                                 <option value="">.::Pilih Universitas::.</option>
                                                                 @foreach ($universitas->all() as $unv)
-                                                                    <option value="{{ $unv->id }}">
-                                                                        {{ $unv->nama_pt }}
+                                                                    <option value="{{ $unv->universitas->id }}">
+                                                                        {{ $unv->universitas->nama_pt }}
                                                                     </option>
                                                                 @endforeach
                                                             </select>
@@ -124,6 +154,7 @@
                                             <th>NISN</th>
                                             <th>Nama Lengkap</th>
                                             <th>Jenis Kelamin</th>
+                                            <th>Asal Sekolah</th>
                                             <th>Tahun Lulus</th>
                                             <th>Universitas</th>
                                             <th>Tahun Masuk</th>
@@ -246,10 +277,10 @@
 @section('javascript')
     <script>
         $(function() {
-            $('#nav-data-siswa').addClass('active').parents('.nav-top').addClass('menu-open').find(
+            $('#nav-siswa-univ-fav').addClass('active').parents('.nav-top').addClass('menu-open').find(
                 '#nav-siswa-terdaftar').addClass('active');
 
-            var url = "{{ url('sekolah/config') }}";
+            var url = "{{ url('admin/config') }}";
             var headers = {
                 "Accept": "application/json",
                 "X-CSRF-TOKEN": "{{ csrf_token() }}"
@@ -264,6 +295,11 @@
                     $('#sekolah-view, #universitas-view, #tahunlulus-view, #tahunmasuk-view').attr('hidden',
                         '');
                     getData('all');
+                } else if (val == 'asal_sekolah') {
+                    $('#sekolah-view').removeAttr('hidden');
+                    $('#universitas-view, #tahunlulus-view, #tahunmasuk-view').attr('hidden',
+                        '');
+
                 } else if (val == 'universitas') {
                     $('#universitas-view').removeAttr('hidden');
                     $('#sekolah-view, #tahunlulus-view, #tahunmasuk-view').attr('hidden',
@@ -277,6 +313,18 @@
                     $('#sekolah-view, #universitas-view, #tahunlulus-view').attr('hidden',
                         '');
                 }
+            });
+
+            $('#sekolah-opt').change(function(e) {
+                e.preventDefault();
+
+                $('#tahunlulus-alt-opt').val('').select2();
+                var get = $('#select-data').val();
+                var val = $(this).val();
+                if (val != '') {
+                    $('#tahunlulus-alt-opt').removeAttr('disabled');
+                    getData(get, val);
+                } else $('#tahunlulus-alt-opt').attr('disabled', '');
             });
 
             $('#universitas-opt').change(function(e) {
@@ -306,6 +354,15 @@
                 var get = $('#select-data').val();
                 var val = $(this).val();
                 if (val != '') getData(get, val);
+            });
+
+            $('#tahunlulus-alt-opt').change(function(e) {
+                e.preventDefault();
+
+                var get = 'sekolah_alt';
+                var skl = $('#sekolah-opt').val();
+                var val = $(this).val();
+                if (val != '') getData(get, val, skl);
             });
 
             $('#tahunmasuk-alt-opt').change(function(e) {
@@ -352,7 +409,7 @@
                     responsive: true,
                     processing: true,
                     serverSide: true,
-                    ajax: url + '/datatable?req=getSiswa&get=' + get + '&value=' + val + '&value2=' +
+                    ajax: url + '/datatable?req=getSiswaFav&get=' + get + '&value=' + val + '&value2=' +
                         val2,
                     columns: [{
                             data: 'no',
@@ -371,6 +428,10 @@
                         {
                             data: 'jenis_kelamin',
                             name: 'jenis_kelamin'
+                        },
+                        {
+                            data: 'sekolah',
+                            name: 'sekolah'
                         },
                         {
                             data: 'tahun_lulus',

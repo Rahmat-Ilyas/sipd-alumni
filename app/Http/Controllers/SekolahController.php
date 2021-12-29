@@ -2,12 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Yajra\DataTables\Facades\DataTables as DataTables;
+
 use App\Models\Kota;
 use App\Models\Sekolah;
 use App\Models\Siswa;
 use App\Models\Universitas;
 use App\Models\UniversitasFav;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class SekolahController extends Controller
 {
@@ -15,7 +19,7 @@ class SekolahController extends Controller
     {
         $this->middleware('auth:sekolah');
     }
-    
+
     public function home()
     {
         return view('sekolah/home');
@@ -50,7 +54,7 @@ class SekolahController extends Controller
             if ($cek_npsn) {
                 return redirect()->back()->withInput($request->all())->withErrors(['error' => ['NPSN sudah terdaftar']]);
             }
-            
+
             $sekolah = Sekolah::where('id', $request->id)->first();
             if ($request->password == '') $except = ['_token', 'id', 'password'];
             else {
@@ -95,9 +99,43 @@ class SekolahController extends Controller
             $kota = Kota::where('provinsi_id', $request->provinsi_id)->get();
             $option = '<option value="">.::Pilih Kota::.</option>';
             foreach ($kota as $dta) {
-                $option .= '<option value="'.$dta->id.'">'.$dta->nama_kota.'</option>';
+                $option .= '<option value="' . $dta->id . '">' . $dta->nama_kota . '</option>';
             }
             return response()->json($option, 200);
+        }
+    }
+
+    public  function datatable(Request $request)
+    {
+        if ($request->req == 'getSiswa') {
+            $result = DB::table('siswa')
+                ->join('universitas', 'siswa.universitas_id', '=', 'universitas.id')
+                ->join('sekolah', 'siswa.sekolah_id', '=', 'sekolah.id')
+                ->select('siswa.*', 'universitas.nama_pt', 'sekolah.nama_sekolah')
+                ->where('sekolah_id', Auth::user()->id)
+                ->orderBy('tahun_lulus', 'desc');
+
+            if ($request->get == 'universitas') {
+                $result = $result->where('universitas_id', $request->value)->get();
+            } else if ($request->get == 'tahun_lulus') {
+                $result = $result->where('tahun_lulus', $request->value)->get();
+            } else if ($request->get == 'tahun_masuk') {
+                $result = $result->where('tahun_masuk_pt', $request->value)->get();
+            } else if ($request->get == 'sekolah_alt') {
+                $result = $result->where('sekolah_id', $request->value2)->where('tahun_lulus', $request->value)->get();
+            } else if ($request->get == 'universitas_alt') {
+                $result = $result->where('universitas_id', $request->value2)->where('tahun_masuk_pt', $request->value)->get();
+            }
+
+            return DataTables::of($result)->addColumn('no', function ($dta) {
+                return null;
+            })->addColumn('universitas', function ($dta) {
+                return $dta->nama_pt;
+            })->addColumn('action', function ($dta) {
+                return '<div class="text-center">
+				<button type="button" class="btn btn-primary btn-sm waves-effect waves-light btn-detail" data-toggle1="tooltip" title="Lihat Detail Siswa" data-toggle="modal" data-target=".modal-detail" data-id="' . $dta->id . '"><i class="fa fa-list"></i> Detail</button>
+				</div>';
+            })->rawColumns(['action'])->toJson();
         }
     }
 }

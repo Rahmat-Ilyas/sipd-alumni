@@ -17,4 +17,9 @@ class UniversitasFav extends Model
     {
         return $this->belongsTo(Universitas::class);
     }
+
+    public function get_siswa()
+    {
+        // return Siswa::where('universitas_id', $this->universitas_id)->get();
+    }
 }

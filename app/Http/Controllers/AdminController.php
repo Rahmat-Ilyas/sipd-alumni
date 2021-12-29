@@ -229,16 +229,10 @@ class AdminController extends Controller
                 ->select('siswa.*', 'universitas.nama_pt', 'sekolah.nama_sekolah')
                 ->orderBy('tahun_lulus', 'desc');
 
-            if ($request->get == 'asal_sekolah') {
-                $result = $result->where('sekolah_id', $request->value)->get();
+            if ($request->get == 'all') {
+                $result = $result->join('universitas_fav', 'siswa.universitas_id', '=', 'universitas_fav.universitas_id')->get();
             } else if ($request->get == 'universitas') {
                 $result = $result->where('universitas_id', $request->value)->get();
-            } else if ($request->get == 'tahun_lulus') {
-                $result = $result->where('tahun_lulus', $request->value)->get();
-            } else if ($request->get == 'tahun_masuk') {
-                $result = $result->where('tahun_masuk_pt', $request->value)->get();
-            } else if ($request->get == 'sekolah_alt') {
-                $result = $result->where('sekolah_id', $request->value2)->where('tahun_lulus', $request->value)->get();
             } else if ($request->get == 'universitas_alt') {
                 $result = $result->where('universitas_id', $request->value2)->where('tahun_masuk_pt', $request->value)->get();
             }

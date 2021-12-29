@@ -46,48 +46,7 @@
                                     <div class="row">
                                         <div class="col-md-12">
                                             <div class="row">
-                                                <div class="col-3">
-                                                    <div class="form-group">
-                                                        <label>Lihat Data Siswa Berdasarkan:</label>
-                                                        <select class="form-control" id="select-data">
-                                                            <option value="all">Semua Data</option>
-                                                            <option value="asal_sekolah">Asal Sekolah (Alumni)</option>
-                                                            <option value="universitas">Universitas</option>
-                                                            <option value="tahun_lulus">Tahun Lulus Sekolah</option>
-                                                            <option value="tahun_masuk">Tahun Masuk Universitas</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div id="sekolah-view" class="col-6 row" hidden="">
-                                                    <div class="col-6">
-                                                        <div class="form-group">
-                                                            <label>Asal Sekolah (Alumni):</label>
-                                                            <select class="select2 form-control" id="sekolah-opt">
-                                                                <option value="">.::Pilih Sekolah::.</option>
-                                                                @foreach ($sekolah->all() as $skl)
-                                                                    <option value="{{ $skl->id }}">
-                                                                        {{ $skl->nama_sekolah }}
-                                                                    </option>
-                                                                @endforeach
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-6">
-                                                        <div class="form-group">
-                                                            <label>Tahun Lulus:</label>
-                                                            <select class="select2 form-control" id="tahunlulus-alt-opt"
-                                                                disabled="">
-                                                                <option value="">.::Pilih Tahun Lulus::.</option>
-                                                                @foreach (array_unique($tahun_lulus) as $tl)
-                                                                    <option value="{{ $tl }}">
-                                                                        {{ $tl }}
-                                                                    </option>
-                                                                @endforeach
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div id="universitas-view" class="col-6 row" hidden="">
+                                                <div id="universitas-view" class="col-6 row">
                                                     <div class="col-6">
                                                         <div class="form-group">
                                                             <label>Universitas:</label>
@@ -114,32 +73,6 @@
                                                                 @endforeach
                                                             </select>
                                                         </div>
-                                                    </div>
-                                                </div>
-                                                <div id="tahunlulus-view" class="col-3" hidden="">
-                                                    <div class="form-group">
-                                                        <label>Tahun Lulus:</label>
-                                                        <select class="select2 form-control" id="tahunlulus-opt">
-                                                            <option value="">.::Pilih Tahun Lulus::.</option>
-                                                            @foreach (array_unique($tahun_lulus) as $tl)
-                                                                <option value="{{ $tl }}">
-                                                                    {{ $tl }}
-                                                                </option>
-                                                            @endforeach
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div id="tahunmasuk-view" class="col-3" hidden="">
-                                                    <div class="form-group">
-                                                        <label>Tahun Masuk Universitas:</label>
-                                                        <select class="select2 form-control" id="tahunmasuk-opt">
-                                                            <option value="">.::Pilih Tahun Masuk::.</option>
-                                                            @foreach (array_unique($tahun_masuk) as $tm)
-                                                                <option value="{{ $tm }}">
-                                                                    {{ $tm }}
-                                                                </option>
-                                                            @endforeach
-                                                        </select>
                                                     </div>
                                                 </div>
                                             </div>
@@ -286,83 +219,16 @@
                 "X-CSRF-TOKEN": "{{ csrf_token() }}"
             }
 
-            $('#select-data').change(function(e) {
-                e.preventDefault();
-                $('#sekolah-opt, #universitas-opt, #tahunlulus-opt, #tahunmasuk-opt').val('').select2();
-                let val = $(this).val();
-
-                if (val == 'all') {
-                    $('#sekolah-view, #universitas-view, #tahunlulus-view, #tahunmasuk-view').attr('hidden',
-                        '');
-                    getData('all');
-                } else if (val == 'asal_sekolah') {
-                    $('#sekolah-view').removeAttr('hidden');
-                    $('#universitas-view, #tahunlulus-view, #tahunmasuk-view').attr('hidden',
-                        '');
-
-                } else if (val == 'universitas') {
-                    $('#universitas-view').removeAttr('hidden');
-                    $('#sekolah-view, #tahunlulus-view, #tahunmasuk-view').attr('hidden',
-                        '');
-                } else if (val == 'tahun_lulus') {
-                    $('#tahunlulus-view').removeAttr('hidden');
-                    $('#sekolah-view, #universitas-view, #tahunmasuk-view').attr('hidden',
-                        '');
-                } else if (val == 'tahun_masuk') {
-                    $('#tahunmasuk-view').removeAttr('hidden');
-                    $('#sekolah-view, #universitas-view, #tahunlulus-view').attr('hidden',
-                        '');
-                }
-            });
-
-            $('#sekolah-opt').change(function(e) {
-                e.preventDefault();
-
-                $('#tahunlulus-alt-opt').val('').select2();
-                var get = $('#select-data').val();
-                var val = $(this).val();
-                if (val != '') {
-                    $('#tahunlulus-alt-opt').removeAttr('disabled');
-                    getData(get, val);
-                } else $('#tahunlulus-alt-opt').attr('disabled', '');
-            });
-
             $('#universitas-opt').change(function(e) {
                 e.preventDefault();
 
                 $('#tahunmasuk-alt-opt').val('').select2();
-                var get = $('#select-data').val();
                 var val = $(this).val();
 
                 if (val != '') {
                     $('#tahunmasuk-alt-opt').removeAttr('disabled');
-                    getData(get, val);
+                    getData('universitas', val);
                 } else $('#tahunmasuk-alt-opt').attr('disabled', '');
-            });
-
-            $('#tahunlulus-opt').change(function(e) {
-                e.preventDefault();
-
-                var get = $('#select-data').val();
-                var val = $(this).val();
-                if (val != '') getData(get, val);
-            });
-
-            $('#tahunmasuk-opt').change(function(e) {
-                e.preventDefault();
-
-                var get = $('#select-data').val();
-                var val = $(this).val();
-                if (val != '') getData(get, val);
-            });
-
-            $('#tahunlulus-alt-opt').change(function(e) {
-                e.preventDefault();
-
-                var get = 'sekolah_alt';
-                var skl = $('#sekolah-opt').val();
-                var val = $(this).val();
-                if (val != '') getData(get, val, skl);
             });
 
             $('#tahunmasuk-alt-opt').change(function(e) {

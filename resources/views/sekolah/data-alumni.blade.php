@@ -241,6 +241,123 @@
         </div>
     </div>
 
+    <div class="modal fade modal-edit" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Edit Data Alumni</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form method="post" action="{{ url('sekolah/update/dataalumni') }}">
+                    @csrf
+                    <div class="modal-body">
+                        <div class="row justify-content-center">
+                            <div class="col-md-6 px-3">
+                                <h5 class="mb-3 text-center">Data Siswa</h5>
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Nama Siswa</label>
+                                    <div class="col-sm-9">
+                                        <input type="text" class="form-control" name="nama" placeholder="Nama Siswa.."
+                                            autocomplete="off" required="">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Jenis Kelamin</label>
+                                    <div class="col-sm-9">
+                                        <select class="form-control" name="jenis_kelamin" required="" id="jenis_kelamin">
+                                            <option value="Laki-laki">Laki-laki</option>
+                                            <option value="Perempuan">Perempuan</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Email</label>
+                                    <div class="col-sm-9">
+                                        <input type="email" class="form-control" name="email" placeholder="Email.."
+                                            required="" autocomplete="off">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Telepon</label>
+                                    <div class="col-sm-9">
+                                        <input type="number" class="form-control" name="telepon" placeholder="Telepon.."
+                                            autocomplete="off">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Alamat</label>
+                                    <div class="col-sm-9">
+                                        <textarea class="form-control" name="alamat" placeholder="Alamat.."></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 px-3">
+                                <h5 class="mb-3 text-center">Data Sekolah</h5>
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">NISN</label>
+                                    <div class="col-sm-9">
+                                        <input type="number" class="form-control" name="nisn" placeholder="NISN.."
+                                            required="" autocomplete="off" id="nisn">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Jurusan</label>
+                                    <div class="col-sm-9">
+                                        <input type="text" class="form-control" name="jurusan_skl"
+                                            placeholder="Jurusan (Sekolah)" required="" autocomplete="off">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Tahun Lulus</label>
+                                    <div class="col-sm-9">
+                                        <input type="number" class="form-control" name="tahun_lulus"
+                                            placeholder="Tahun Lulus.." required="" autocomplete="off">
+                                    </div>
+                                </div>
+                                <h5 class="mb-3 text-center">Data Universitas </h5>
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Universitas</label>
+                                    <div class="col-sm-9">
+                                        <select name="universitas_id" class="form-control select2" id="universitas_id"
+                                            data-live-search="true" required="" autocomplete="off">
+                                            <option value="">.::Pilih Universitas::.</option>
+                                            @foreach ($universitas->all() as $unv)
+                                                <option value="{{ $unv->id }}">
+                                                    {{ $unv->nama_pt }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Jurusan</label>
+                                    <div class="col-sm-9">
+                                        <input type="text" class="form-control" name="jurusan_pt"
+                                            placeholder="Jurusan (Universitas)" required="" autocomplete="off">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Tahun Masuk</label>
+                                    <div class="col-sm-9">
+                                        <input type="number" class="form-control" name="tahun_masuk_pt"
+                                            placeholder="Tahun Masuk.." required="" autocomplete="off">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="hidden" name="id">
+                        <input type="hidden" name="sekolah_id" value="{{ Auth::user()->id }}">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+                        <button type="submit" class="btn btn-primary">Simpan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
 @endsection
 
 @section('javascript')
@@ -332,6 +449,29 @@
                     success: function(data) {
                         $.each(data, function(key, val) {
                             $('.dtl-' + key).text(val);
+                        });
+                    }
+                });
+            });
+
+            $(document).on('click', '.btn-edit', function(e) {
+                e.preventDefault();
+
+                let data_id = $(this).attr('data-id');
+                $.ajax({
+                    url: url,
+                    method: "POST",
+                    headers: headers,
+                    data: {
+                        req: 'getSiswaDetail',
+                        id: data_id
+                    },
+                    success: function(data) {
+                        $.each(data, function(key, val) {
+                            $('input[name="' + key + '"]').val(val);
+                            $('select[name="' + key + '"]').val(val);
+                            $('textarea[name="' + key + '"]').val(val);
+                            $('#universitas_id').select2();
                         });
                     }
                 });

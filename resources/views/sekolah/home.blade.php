@@ -1,5 +1,23 @@
 @extends('sekolah.layout')
 @section('content')
+    @php
+    $siswa = new App\Models\Siswa();
+    $angkatan = [];
+    foreach ($siswa->where('sekolah_id', Auth::user()->id)->get() as $sw) {
+        $angkatan[] = $sw->tahun_lulus;
+    }
+
+    $univfav = new App\Models\UniversitasFav();
+    $jum_fav = 0;
+    foreach ($univfav->all() as $unv) {
+        $jum_fav += count(
+            $siswa
+                ->where('sekolah_id', Auth::user()->id)
+                ->where('universitas_id', $unv->universitas_id)
+                ->get(),
+        );
+    }
+    @endphp
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper">
         <!-- Content Header (Page header) -->
@@ -29,14 +47,15 @@
                         <!-- small box -->
                         <div class="small-box bg-info">
                             <div class="inner">
-                                <h3>150</h3>
+                                <h3>{{ count($siswa->where('sekolah_id', Auth::user()->id)->get()) }}</h3>
 
                                 <p>Jumlah Alumni</p>
                             </div>
                             <div class="icon">
                                 <i class="ion ion-bag"></i>
                             </div>
-                            <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                            <a href="{{ url('sekolah/data-alumni') }}" class="small-box-footer">More info <i
+                                    class="fas fa-arrow-circle-right"></i></a>
                         </div>
                     </div>
                     <!-- ./col -->
@@ -44,14 +63,15 @@
                         <!-- small box -->
                         <div class="small-box bg-success">
                             <div class="inner">
-                                <h3>44</h3>
+                                <h3>{{ $jum_fav }}</h3>
 
                                 <p>Alumni di Universitas Favorit</p>
                             </div>
                             <div class="icon">
                                 <i class="ion ion-person-add"></i>
                             </div>
-                            <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                            <a href="{{ url('sekolah/data-alumni') }}" class="small-box-footer">More info <i
+                                    class="fas fa-arrow-circle-right"></i></a>
                         </div>
                     </div>
                     <!-- ./col -->
@@ -59,14 +79,15 @@
                         <!-- small box -->
                         <div class="small-box bg-warning">
                             <div class="inner">
-                                <h3>53</h3>
+                                <h3>{{ count(array_unique($angkatan)) }}</h3>
 
                                 <p>Jumlah Angkatan</p>
                             </div>
                             <div class="icon">
                                 <i class="ion ion-stats-bars"></i>
                             </div>
-                            <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                            <a href="{{ url('sekolah/data-alumni') }}" class="small-box-footer">More info <i
+                                    class="fas fa-arrow-circle-right"></i></a>
                         </div>
                     </div>
                     <!-- ./col -->

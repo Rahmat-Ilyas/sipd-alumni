@@ -49,7 +49,21 @@ class SekolahController extends Controller
 
     public function update(Request $request, $target)
     {
-        if ($target == 'profilsekolah') {
+        if ($target == 'dataalumni') {
+            $cek_nisn = Siswa::where('nisn', $request->nisn)->where('id', '!=', $request->id)->first();
+            if ($cek_nisn) {
+                return redirect()->back()->withInput($request->all())->withErrors(['error' => ['NISN sudah ada di database']]);
+            }
+
+            $siswa = Siswa::where('id', $request->id)->first();
+            $except = ['_token', 'id'];
+            foreach ($request->except($except) as $key => $data) {
+                $siswa->$key = $data;
+            }
+            $siswa->save();
+
+            return back()->with('success', 'Data siswa berhasil diupdate');
+        } else if ($target == 'profilsekolah') {
             $cek_npsn = Sekolah::where('npsn', $request->npsn)->where('id', '!=', $request->id)->first();
             if ($cek_npsn) {
                 return redirect()->back()->withInput($request->all())->withErrors(['error' => ['NPSN sudah terdaftar']]);
@@ -138,7 +152,8 @@ class SekolahController extends Controller
                 return $dta->nama_pt;
             })->addColumn('action', function ($dta) {
                 return '<div class="text-center">
-				<button type="button" class="btn btn-primary btn-sm waves-effect waves-light btn-detail" data-toggle1="tooltip" title="Lihat Detail Siswa" data-toggle="modal" data-target=".modal-detail" data-id="' . $dta->id . '"><i class="fa fa-list"></i> Detail</button>
+				<button type="button" class="btn btn-primary btn-sm waves-effect waves-light btn-edit" data-toggle1="tooltip" title="Edit Data Siswa" data-toggle="modal" data-target=".modal-edit" data-id="' . $dta->id . '"><i class="fa fa-edit"></i></button>
+				<button type="button" class="btn btn-secondary btn-sm waves-effect waves-light btn-detail" data-toggle1="tooltip" title="Lihat Detail Siswa" data-toggle="modal" data-target=".modal-detail" data-id="' . $dta->id . '"><i class="fa fa-list"></i></button>
 				</div>';
             })->rawColumns(['action'])->toJson();
         }

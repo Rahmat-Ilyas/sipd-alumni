@@ -333,6 +333,8 @@
     <script src="{{ asset('plugins/datatables-buttons/js/buttons.colVis.min.js') }}"></script>
     <!-- Sparkline -->
     <script src="{{ asset('plugins/sparklines/sparkline.js') }}"></script>
+
+    <script src="{{ asset('plugins/chart.js/Chart.min.js') }}"></script>
     <!-- Select2 -->
     <script src="{{ asset('plugins/select2/js/select2.full.min.js') }}"></script>
     <!-- jQuery Knob Chart -->
@@ -350,6 +352,8 @@
     <script src="{{ asset('dist/js/adminlte.js') }}"></script>
     <!-- AdminLTE for demo purposes -->
     <script src="{{ asset('dist/js/demo.js') }}"></script>
+    <script src="{{ asset('dist/js/pages/dashboard3.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         $(function() {
             $('.dataTable').DataTable({

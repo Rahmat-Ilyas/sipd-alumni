@@ -185,6 +185,16 @@ class AdminController extends Controller
             $res['sekolah_'] = $res->sekolah->nama_sekolah;
             $res['universitas_'] = $res->universitas->nama_pt;
             return response()->json($res, 200);
+        } else if ($request->req == 'getCart') {
+            $data = UniversitasFav::all();
+            $result = [];
+            foreach ($data as $dta) {
+                $result['univ'][] = $dta->universitas->nama_pt;
+                $siswa = Siswa::where('universitas_id', $dta->universitas_id)->get();
+                $result['siswa'][] = count($siswa);
+            }
+
+            return response()->json($result, 200);
         }
     }
 

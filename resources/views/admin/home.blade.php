@@ -96,6 +96,25 @@
                     </div>
                     <!-- ./col -->
                 </div>
+
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="card">
+                            <div class="card-header border-0">
+                                <div class="d-flex justify-content-between">
+                                    <h4>Grafik Data Siswa di Universitas Favorit</h4>
+                                </div>
+                            </div>
+                            <div class="card-body">
+
+                                <div class="position-relative mb-4" style="height: 500px">
+                                    {{-- <canvas id="sales-chart" height="300"></canvas> --}}
+                                    <canvas id="myChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <!-- /.row -->
             </div><!-- /.container-fluid -->
         </section>
@@ -108,6 +127,52 @@
     <script>
         $(function() {
             $('#nav-home').addClass('active');
+
+            var url = "{{ url('admin/config') }}";
+            var headers = {
+                "Accept": "application/json",
+                "X-CSRF-TOKEN": "{{ csrf_token() }}"
+            }
+
+            $.ajax({
+                url: url,
+                method: "POST",
+                headers: headers,
+                data: {
+                    req: 'getCart',
+                },
+                success: function(res) {
+                    const data = {
+                        labels: res.univ,
+                        datasets: [{
+                            label: 'Jumlah Siswa',
+                            backgroundColor: 'rgb(75, 192, 192)',
+                            borderColor: 'rgb(255, 99, 132)',
+                            data: res.siswa,
+                        }]
+                    };
+
+                    const config = {
+                        type: 'bar',
+                        data: data,
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true
+                                }
+                            },
+                            responsive: true,
+                            maintainAspectRatio: false
+                        },
+                    };
+
+                    const myChart = new Chart(
+                        document.getElementById('myChart'),
+                        config
+                    );
+
+                }
+            });
         });
     </script>
 @endsection
